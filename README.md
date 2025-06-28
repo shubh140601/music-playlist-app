@@ -20,11 +20,15 @@ A React + TypeScript based frontend music playlist management system using Spoti
 git clone https://github.com/shubh140601/music-playlist-app.git
 cd music-playlist-app
 npm install
+```
+# Create a .env file in the root and add
 
-Create a .env file in the root and add:
 VITE_SPOTIFY_CLIENT_ID=your_spotify_client_id
 VITE_SPOTIFY_CLIENT_SECRET=your_spotify_client_secret
 
-npm run dev
+# Run the project
 
+```bash
+npm run dev
+```
 live demo: https://my-music-playlist-app.vercel.app/
