@@ -12,8 +12,6 @@ A React + TypeScript based frontend music playlist management system using Spoti
 - React Router
 - Toastify
 
-# Getting Started
-
 # Clone the repo
 
 ```bash
