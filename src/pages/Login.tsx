@@ -19,8 +19,15 @@ import { login } from "../redux/slices/authSlice";
 import { MdVisibility, MdVisibilityOff } from "react-icons/md";
 import type { RootState } from "../redux/store";
 
+const inputStyles = {
+  "& .MuiOutlinedInput-root": {
+    "& fieldset": { borderColor: "#333" },
+  },
+};
+
+const inputLabelStyles = { sx: { color: "#aaa" } };
+
 const Login: React.FC = () => {
-  // to toggle icon & password
   const [showPassword, setShowPassword] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -36,7 +43,6 @@ const Login: React.FC = () => {
       password: Yup.string().required("Password is required"),
     }),
     onSubmit: (values) => {
-      // find user in storage
       const foundUser = users.find((u) => u.username === values.username);
 
       if (!foundUser) {
@@ -45,10 +51,9 @@ const Login: React.FC = () => {
       }
 
       const isAdmin = foundUser.admin === true;
-
       const isPasswordValid = isAdmin
-        ? foundUser.password === values.password //we have stored default password 1234 for admin so used this condition
-        : bcrypt.compareSync(values.password, foundUser.password); // for normal users - created from our web
+        ? foundUser.password === values.password
+        : bcrypt.compareSync(values.password, foundUser.password);
 
       if (isPasswordValid) {
         dispatch(
@@ -58,11 +63,7 @@ const Login: React.FC = () => {
             admin: isAdmin,
           })
         );
-        toast.success(
-          isAdmin ? "Admin login successful!" : "Login successful!"
-        );
-
-        //redirect user to dashboard screen
+        toast.success(isAdmin ? "Admin login successful!" : "Login successful!");
         navigate("/dashboard");
       } else {
         toast.error("Invalid username or password");
@@ -70,136 +71,118 @@ const Login: React.FC = () => {
     },
   });
 
-  try {
-    return (
-      <Box
-        display="flex"
-        justifyContent="center"
-        alignItems="center"
-        height="100vh"
-        bgcolor="#121212"
+  return (
+    <Box
+      display="flex"
+      justifyContent="center"
+      alignItems="center"
+      height="100vh"
+      bgcolor="#121212"
+    >
+      <Paper
+        elevation={6}
+        sx={{
+          p: 5,
+          width: "90%",
+          maxWidth: 400,
+          borderRadius: 2,
+          backgroundColor: "#1E1E1E",
+          color: "white",
+        }}
       >
-        <Paper
-          elevation={6}
-          sx={{
-            p: 5,
-            width: "90%",
-            maxWidth: 400,
-            borderRadius: 2,
-            backgroundColor: "#1E1E1E",
-            color: "white",
-          }}
+        <Typography
+          variant="h4"
+          fontWeight="bold"
+          gutterBottom
+          align="center"
+          sx={{ color: "#1DB954" }}
         >
-          <Typography
-            variant="h4"
-            fontWeight="bold"
-            gutterBottom
-            align="center"
-            sx={{ color: "#1DB954" }}
-          >
-            Music App
-          </Typography>
+          Music App
+        </Typography>
 
-          <form onSubmit={formik.handleSubmit}>
-            {/* user name field */}
-            <TextField
-              label="Username"
-              name="username"
+        <form onSubmit={formik.handleSubmit}>
+          <TextField
+            label="Username"
+            name="username"
+            variant="outlined"
+            fullWidth
+            margin="normal"
+            value={formik.values.username}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            error={formik.touched.username && Boolean(formik.errors.username)}
+            helperText={formik.touched.username && formik.errors.username}
+            InputProps={{ sx: { color: "white" } }}
+            InputLabelProps={inputLabelStyles}
+            sx={inputStyles}
+          />
+
+          <TextField
+            label="Password"
+            name="password"
+            type={showPassword ? "text" : "password"}
+            variant="outlined"
+            fullWidth
+            margin="normal"
+            value={formik.values.password}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            error={formik.touched.password && Boolean(formik.errors.password)}
+            helperText={formik.touched.password && formik.errors.password}
+            InputProps={{
+              sx: { color: "white" },
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton
+                    onClick={() => setShowPassword((prev) => !prev)}
+                    edge="end"
+                    sx={{ color: "#aaa" }}
+                  >
+                    {showPassword ? <MdVisibilityOff /> : <MdVisibility />}
+                  </IconButton>
+                </InputAdornment>
+              ),
+            }}
+            InputLabelProps={inputLabelStyles}
+            sx={inputStyles}
+          />
+
+          <Stack spacing={2} mt={3}>
+            <Button
+              type="submit"
+              variant="contained"
+              fullWidth
+              sx={{
+                bgcolor: "#1DB954",
+                "&:hover": { bgcolor: "#1ed760" },
+                fontWeight: "bold",
+                textTransform: "none",
+              }}
+            >
+              Log In
+            </Button>
+            <Button
               variant="outlined"
               fullWidth
-              margin="normal"
-              value={formik.values.username}
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
-              error={formik.touched.username && Boolean(formik.errors.username)}
-              helperText={formik.touched.username && formik.errors.username}
-              InputProps={{ sx: { color: "white" } }}
-              InputLabelProps={{ sx: { color: "#aaa" } }}
+              onClick={() => navigate("/register")}
               sx={{
-                "& .MuiOutlinedInput-root": {
-                  "& fieldset": { borderColor: "#333" },
+                color: "#1DB954",
+                borderColor: "#1DB954",
+                "&:hover": {
+                  bgcolor: "rgba(29,185,84,0.1)",
+                  borderColor: "#1ed760",
                 },
+                fontWeight: "bold",
+                textTransform: "none",
               }}
-            />
-
-            {/* Password field */}
-            <TextField
-              label="Password"
-              name="password"
-              type={showPassword ? "text" : "password"}
-              variant="outlined"
-              fullWidth
-              margin="normal"
-              value={formik.values.password}
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
-              error={formik.touched.password && Boolean(formik.errors.password)}
-              helperText={formik.touched.password && formik.errors.password}
-              InputProps={{
-                sx: { color: "white" },
-                endAdornment: (
-                  <InputAdornment position="end">
-                    <IconButton
-                      onClick={() => setShowPassword((prev) => !prev)}
-                      edge="end"
-                      sx={{ color: "#aaa" }}
-                    >
-                      {showPassword ? <MdVisibilityOff /> : <MdVisibility />}
-                    </IconButton>
-                  </InputAdornment>
-                ),
-              }}
-              InputLabelProps={{ sx: { color: "#aaa" } }}
-              sx={{
-                "& .MuiOutlinedInput-root": {
-                  "& fieldset": { borderColor: "#333" },
-                },
-              }}
-            />
-
-            {/* submit button */}
-            <Stack spacing={2} mt={3}>
-              <Button
-                type="submit"
-                variant="contained"
-                fullWidth
-                sx={{
-                  bgcolor: "#1DB954",
-                  "&:hover": { bgcolor: "#1ed760" },
-                  fontWeight: "bold",
-                  textTransform: "none",
-                }}
-              >
-                Log In
-              </Button>
-
-              {/* Create Account Button */}
-              <Button
-                variant="outlined"
-                fullWidth
-                onClick={() => navigate("/register")}
-                sx={{
-                  color: "#1DB954",
-                  borderColor: "#1DB954",
-                  "&:hover": {
-                    bgcolor: "rgba(29,185,84,0.1)",
-                    borderColor: "#1ed760",
-                  },
-                  fontWeight: "bold",
-                  textTransform: "none",
-                }}
-              >
-                Create Account
-              </Button>
-            </Stack>
-          </form>
-        </Paper>
-      </Box>
-    );
-  } catch (e) {
-    console.log(e);
-    return <></>;
-  }
+            >
+              Create Account
+            </Button>
+          </Stack>
+        </form>
+      </Paper>
+    </Box>
+  );
 };
 
 export default Login;
